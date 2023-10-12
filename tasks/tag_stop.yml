@@ -1,2 +1,19 @@
 ---
-# TODO
+  - name: Check if docker-compose file exists
+    ansible.builtin.stat:
+      path: "{{ VAULTWARDEN_PATH }}/docs/docker-compose.yml"
+    register: vaultwarden_stat_docker_compose_file
+
+  - name: Docker Compose Stop Running Apps
+    community.docker.docker_compose:
+      project_src: "{{ VAULTWARDEN_PATH }}/docs"
+      files: "docker-compose.yml"
+      state: absent
+    when: vaultwarden_stat_docker_compose_file.stat.exists
+
+  - name: Remove Cronjobs
+    ansible.builtin.cron:
+      backup: true
+      job: "bash {{ VAULTWARDEN_PATH }}/scripts/vaultwarden_backup.sh -n 30"
+      name: "Vaultwarden - Backup"
+      state: "present"

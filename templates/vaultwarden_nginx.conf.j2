@@ -1,0 +1,40 @@
+server {
+    listen       80;
+    listen       [::]:80;
+    server_name vaultwarden {{ VAULTWARDEN_FQDN }};
+  
+    access_log /var/log/nginx/vaultwarden.80.{{ VAULTWARDEN_FQDN }}.access.log;
+    error_log /var/log/nginx/vaultwarden.80.{{ VAULTWARDEN_FQDN }}.error.log;
+  
+    #location / {
+    #  proxy_pass "http://localhost:{{ VAULTWARDEN_HTTP_PORT }}";
+    #  proxy_set_header Host $http_host;
+    #  proxy_set_header X-Real-IP $remote_addr;
+    #  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #  proxy_set_header X-Forwarded-Proto $scheme;
+    #}
+  
+    return 301 https://{{ VAULTWARDEN_FQDN }}$request_uri;
+  
+  }
+  
+  server {
+    listen       443;
+    listen       [::]:443;
+    server_name {{ VAULTWARDEN_FQDN }};
+    ssl on;
+    ssl_certificate {{ VAULTWARDEN_SSL_CERT_PATH }};
+    ssl_certificate_key {{ VAULTWARDEN_SSL_KEY_PATH }};
+  
+    access_log /var/log/nginx/vaultwarden.443.{{ VAULTWARDEN_FQDN }}.access.log;
+    error_log /var/log/nginx/vaultwarden.443.{{ VAULTWARDEN_FQDN }}.error.log;
+  
+    location / {
+      proxy_pass "http://localhost:{{ VAULTWARDEN_HTTP_PORT }}";
+      proxy_set_header Host $http_host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+    }
+  
+  }

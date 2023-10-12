@@ -1,0 +1,90 @@
+# Setup Variables
+dateTime="$(date +'%Y%m%d-%H%M%S')"
+#echo "DATETIME ${dateTime}"
+logFile="{{ VAULTWARDEN_PATH }}/backups/logs/freshrss-dump-database-${dateTime}.log"
+outputFolder="{{ VAULTWARDEN_PATH }}/backups/${dateTime}"
+
+log() {
+    if [[ -z "$1" ]];
+    then # If there are no arguments, assume data was piped in
+        # For data piped in 
+        while IFS= read line; do
+            echo "${line}" >> "$logFile"
+        done
+    else # Arguments were passed and need to be logged
+        # For arguments to log
+        for msg in "$@"
+        do
+            echo "$msg" >> "$logFile"
+        done
+    fi
+
+
+}
+
+create_database_backups() {
+    log "==========================="
+    log "Starting Database Dumps"
+    backup_file_name="${outputFolder}/db.dump.${dateTime}.sqlite3"
+    log "Database dump output path: ${backup_file_name}"
+    log "Command: sqlite3 {{ VAULTWARDEN_PATH }}/volumes//data/db.sqlite3 vacuum into ${backup_file_name}"
+    sqlite3 "{{ VAULTWARDEN_PATH }}/volumes//data/db.sqlite3" ".backup ${backup_file_name}" 2>&1 | log
+}
+
+create_tarball_backups() {
+    log "==========================="
+    log "Starting Tarball Creation"
+    tarball_backup_file="${outputFolder}/vaultwarden.${dateTime}.tar.gz"
+    log "Tarball output path: ${tarball_backup_file}"
+    tar --exclude="{{ VAULTWARDEN_PATH }}/backups/*" --exclude="backups/*" --exclude="../backups/*"  --directory="{{ VAULTWARDEN_PATH }}" -czf  "${tarball_backup_file}" "{{ VAULTWARDEN_PATH }}" 2>&1 | log
+}
+
+cleanup_backups() {
+    log "TODO: implement cleaning up old backups"
+}
+
+print_help() {
+    echo "TODO implement help"
+}
+
+# Main
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --num-backups*|-n*)
+        shift
+        if [[ -z "$1" ]]
+        then
+            echo "Missing arg <number>"
+            print_help
+        elif [[ ! $1 =~ ^-?[0-9]+$ ]]
+        then
+            echo "Argument must be a number: "
+            echo "-n|--num-backups <number>"
+            print_help
+        else
+            number_of_backups="$1"
+        fi
+        ;;
+    --help*|-h*)
+        print_help
+        ;;
+     *)
+        echo "Invalid arg"
+        print_help
+        ;;
+    esac
+    shift
+done
+
+log "Starting backup script: ${dateTime}"
+log "Creating backup folder ${outputFolder}"
+mkdir -p "${outputFolder}" 2>&1 | log
+
+create_database_backups
+create_tarball_backups
+
+if [[ ! -z "$number_of_backups" ]]
+then
+    cleanup_backups "$number_of_backups"
+fi

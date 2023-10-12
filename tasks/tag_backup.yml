@@ -1,2 +1,5 @@
 ---
-# TODO
+- name: Run backup script
+  ansible.builtin.command: "bash {{ VAULTWARDEN_PATH }}/scripts/vaultwarden_backup.sh"
+  check_mode: false
+  diff: false

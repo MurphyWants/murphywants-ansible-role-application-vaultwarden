@@ -1,0 +1,19 @@
+---
+  - name: Install nginx
+    ansible.builtin.package:
+      name: nginx
+  
+  - name: Open nginx port in UFW
+    community.general.ufw:
+      rule: allow
+      name: 'Nginx Full'
+  
+  - name: Copy nginx config
+    ansible.builtin.template:
+      src: "{{ role_path }}/templates/vaultwarden_nginx.conf.j2"
+      dest: /etc/nginx/conf.d/vaultwarden_nginx.conf
+
+  - name: Restart nginx
+    ansible.builtin.systemd_service:
+      name: nginx
+      state: restarted

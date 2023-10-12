@@ -1,2 +1,25 @@
 ---
-# TODO
+  - name: Prestage Tasks
+    ansible.builtin.import_tasks:
+      file: setup_0_prestage.yml
+
+  - name: Partitioning - ZFS
+    ansible.builtin.import_tasks:
+      file: setup_1_partitioning_zfs.yml 
+      
+  - name: Configure Docker
+    ansible.builtin.import_tasks:
+      file: setup_2_docker.yml    
+ 
+  - name: Configure Vaultwarden
+    ansible.builtin.import_tasks:
+      file: setup_3_configure_vaultwarden.yml
+
+  - name: Configure Nginx
+    ansible.builtin.import_tasks:
+      file: setup_4_configure_nginx.yml
+
+  - name: Start Vaultwarden
+    ansible.builtin.import_tasks:
+      file: tag_start.yml
+
