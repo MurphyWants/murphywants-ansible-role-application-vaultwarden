@@ -6,7 +6,7 @@ VAULTWARDEN_STORAGE_ZFS_FS: 'vaultwarden'
 VAULTWARDEN_TIMEZONE: "America/New_York"
 VAULTWARDEN_PODMAN_SERVICE_ACCOUNT: 'srv_vaultwarden'
 VAULTWARDEN_CONTAINER_VERSION: 'latest'
-VAULTWARDEN_FQDN: 'vaultwarden.domain.com'
+VAULTWARDEN_FQDN: 'vaultwarden.local'
 # undefined variables
 # VAULTWARDEN_SSL_CERT_PATH: path to cert
 # VAULTWARDEN_SSL_KEY_PATH: path to key
