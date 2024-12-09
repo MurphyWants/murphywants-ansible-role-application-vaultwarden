@@ -9,7 +9,7 @@
       project_src: "{{ VAULTWARDEN_PATH }}/docs"
       files: "docker-compose.yml"
       state: present
-      pull: true
+      pull: always
       project_name: vaultwarden
     when: vaultwarden_stat_docker_compose_file.stat.exists
     
