@@ -4,6 +4,7 @@ services:
         container_name: vaultwarden
         environment:
             - TZ='{{ VAULTWARDEN_TIMEZONE }}'
+            - COMPOSE_PROJECT_NAME=vaultwarden
         ports:
             - '127.0.0.1:{{ VAULTWARDEN_HTTP_PORT }}:80/tcp'
         volumes:
@@ -11,5 +12,3 @@ services:
         image: 'docker.io/vaultwarden/server:{{ VAULTWARDEN_CONTAINER_VERSION }}'
         restart: unless-stopped
         network_mode: bridge
-        environment:
-            - COMPOSE_PROJECT_NAME=vaultwarden
